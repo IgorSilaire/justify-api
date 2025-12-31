@@ -1,6 +1,7 @@
 import express from "express";
 import crypto from "crypto"
 import { justifyText } from "./justify";
+import { validQuota } from "./rateLimit";
 
 const app = express();
 const PORT: number = 3000;
