@@ -69,7 +69,7 @@ app.post("/api/justify", authMiddleware, express.text({type: "text/plain"}), (re
     
     const text = req.body;
 
-    if (typeof(text) !== "string") {
+    if (text == null) {
         return res.status(400).send("invalid text");
     }
     // @ts-ignore
