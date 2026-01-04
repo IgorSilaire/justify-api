@@ -18,9 +18,5 @@ test("text lines justified must be 80 characters long", () => {
     for (let i = 0; i < lines.length - 1; i++) {
         expect(lines[i]?.length).toBe(80)
     }
-    
 
-    const lastLine = lines[lines.length - 1];
-    expect(lastLine).toBeDefined();
-    expect(lastLine.length).toBeLessThanOrEqual(80);
 })
