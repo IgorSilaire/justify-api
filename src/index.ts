@@ -18,27 +18,34 @@ function getEmailFromToken(token : string): string | undefined {
 }
 
 function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
-
+    
     const authHeader = req.headers.authorization;
+
     if (!authHeader) {
-        return res.status(401).json({error : "miss auth header"});
+        return res.status(401).json({ error: "miss auth header" });
     }
 
-    const [scheme,token] = authHeader.split(" ");
+    const [scheme, token] = authHeader.split(" ");
+
     if (scheme !== "Bearer" || !token) {
-        return res.status(401).json({error: "invalid format"});
+        return res.status(401).json({ error: "invalid format" });
     }
 
     const email = getEmailFromToken(token);
 
     if (!email) {
-        return res.status(401).json({error: "invalid token (email does not exist)"});
+    return res.status(401).json({ error: "invalid token" });
     }
 
     // @ts-ignore
     req.email = email;
+
+    // @ts-ignore
+    req.token = token;
+
     next();
 }
+
 
 app.get("/", (_req, res) => {
     res.send("Justify API running!");
@@ -65,24 +72,28 @@ app.post("/api/token", (req, res) => {
     return res.status(201).json({token});
 });
 
-app.post("/api/justify", authMiddleware, express.text({type: "text/plain"}), (req, res) => {
-    
+app.post("/api/justify", authMiddleware, express.text({ type: "text/plain", limit :"1mb" }), 
+(req, res) => {
+
     const text = req.body;
 
     if (text == null) {
         return res.status(400).send("invalid text");
     }
+
     // @ts-ignore
     const token = req.token;
+    
 
-    const ok = validQuota(token, text);
-
-    if (!ok) {
-        return res.status(402).json({error: "Daily limit exceeded"});
+    if (!validQuota(token, text)) {
+        return res
+        .status(402)
+        .json({ error: "Daily limit exceeded" });
     }
 
     const justified = justifyText(text);
 
     res.type("text/plain").send(justified);
+    }
+);
 
-})

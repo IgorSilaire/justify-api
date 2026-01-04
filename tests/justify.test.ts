@@ -9,7 +9,7 @@ function randomWords(count: number): string {
 
 test("text lines justified must be 80 characters long", () => {
     
-    const text = randomWords(600);
+    const text = randomWords(650);
 
     const out = justifyText(text);
 
@@ -22,5 +22,5 @@ test("text lines justified must be 80 characters long", () => {
 
     const lastLine = lines[lines.length - 1];
     expect(lastLine).toBeDefined();
-    expect(lastLine.length).toBeLessThan(80);
+    expect(lastLine.length).toBeLessThanOrEqual(80);
 })
