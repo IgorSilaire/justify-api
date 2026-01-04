@@ -44,9 +44,13 @@ app.get("/", (_req, res) => {
     res.send("Justify API running!");
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+export default app;
+
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
+}
 
 app.post("/api/token", (req, res) => {
     const { email } = req.body;
@@ -67,6 +71,14 @@ app.post("/api/justify", authMiddleware, express.text({type: "text/plain"}), (re
 
     if (typeof(text) !== "string") {
         return res.status(400).send("invalid text");
+    }
+    // @ts-ignore
+    const token = req.token;
+
+    const ok = validQuota(token, text);
+
+    if (!ok) {
+        return res.status(402).json({error: "Daily limit exceeded"});
     }
 
     const justified = justifyText(text);
